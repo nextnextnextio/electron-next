@@ -3,11 +3,9 @@
   "version": "0.0.1",
   "description": "nextnextnext plugin for electron",
   "main": "src/index.js",
-  "bin": {
-    "electron-next": "bin/electron-next.js"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "set DEBUG=* && ts-node src/cli.ts",
+    "test": "mocha -r ts-node/register test/*spec.ts"
   },
   "repository": {
     "type": "git",
@@ -28,10 +26,12 @@
     "debug": "^4.3.4",
     "fs-extra": "^10.1.0",
     "moment": "^2.29.4",
+    "semver": "^7.3.7",
     "yargs": "^17.5.1"
   },
   "devDependencies": {
     "@types/chai": "^4.3.3",
+    "@types/debug": "^4.1.7",
     "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^9.1.1",
     "@types/yargs": "^17.0.11",

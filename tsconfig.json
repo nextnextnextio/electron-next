@@ -1,7 +1,16 @@
 {
     "extends": "@tsconfig/node14/tsconfig.json",
     "compilerOptions": {
-        "outDir": "./lib"
+        "target": "es5",
+        "module": "commonjs",
+        "outDir": "lib",
+        "rootDir": "src",
+        "strict": true,
+        "types": [
+            "node"
+        ],
+        "esModuleInterop": true,
+        "resolveJsonModule": true
     },
     "include": [
         "./src/",

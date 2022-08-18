@@ -1,40 +1,37 @@
-"use strict"
+import { ElectronOptions } from "./options";
+import utils from "./utils";
 
-interface ElectronOptions {
-    /** Folder that contains the packaged electron application */
-    dist: String
-    /** Defaults to  the `name` from `package.json` */
-    name?: String
-    /** Defaults to the `author` from `package.json` */
-    author?: String
-    /** Defaults to the `version` field in `package.json` */
-    version?: String
+export const electronNext = {
+    async create(argv: any) {
+        console.log("Running nextnextnext create!");
+        
+        try {
+            let nextBuilder = {} as ElectronOptions;
+            // check package.json
+            console.log("Reading package.json");
+            const pjson = await utils.getPackageJson(__dirname);
 
-    copyright: String
-    description: String
-    icon: String
-    artifact_name: String
-    install_dir: String
-    cert_file: String
-    cert_pass: String
-    dest: String
-}
+            // get distribution folder
+            if (argv.dist) {
+                nextBuilder.dist = argv.dist;
+            }
 
-interface Component {
-    name: String
-    enabled: boolean
-    required: boolean
-    files: String[]
-}
+            // get product version from argv or package.json
+            const version = argv.productVersion || utils.extractPackageInfo(pjson, "version");
+            if (version) {
+                nextBuilder.version = version;
+            }
 
-function main() {
-    // check prereqs
 
-    // get nextnextnext.json
-    // - or -
-    // get nextnextnext.config.js
 
-    // check and download next binaries from github releaes
+            console.log(nextBuilder);
 
-    // run next-maker.exe
+            // check and download next binaries from github releaes
+            // run next-maker.exe
+    
+            return 0;
+        } catch(error) {
+            return 1;
+        }
+    }
 }
