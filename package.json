@@ -1,0 +1,43 @@
+{
+  "name": "electron-next",
+  "version": "0.0.1",
+  "description": "nextnextnext plugin for electron",
+  "main": "src/index.js",
+  "bin": {
+    "electron-next": "bin/electron-next.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nextnextnextio/electron-next.git"
+  },
+  "keywords": [
+    "nextnextnext",
+    "electron",
+    "installer"
+  ],
+  "author": "Peter Sarhidai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nextnextnextio/electron-next/issues"
+  },
+  "homepage": "https://github.com/nextnextnextio/electron-next#readme",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "fs-extra": "^10.1.0",
+    "moment": "^2.29.4",
+    "yargs": "^17.5.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.3",
+    "@types/fs-extra": "^9.0.13",
+    "@types/mocha": "^9.1.1",
+    "@types/yargs": "^17.0.11",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "4.7.4"
+  }
+}
