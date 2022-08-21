@@ -23,8 +23,13 @@ export interface ElectronOptions {
     install_dir?: string
     /** Path to .pfx or .p12 certification file. */
     cert_file?: string
-    /** Password for certification file described in `cert_file`. */
+    /** Password for the certification file described in `cert_file`. */
     cert_pass?: string
-    /** Path to the destination folder where the final installer should be placed. */
-    dest?: string
+    /** Path to the folder where the final installer should be placed. */
+    out?: string,
+    /** Functions that will run before and after the make procedure */
+    hooks?: {
+        pre: Function,
+        post: Function
+    }
 }
