@@ -139,15 +139,6 @@ export default {
       .parse();
   },
 
-  info() {
-    console.log(
-      "platform:",
-      this.convertPlatform(process.platform),
-      "arch:",
-      this.convertArch(process.arch),
-    );
-  },
-
   getBinaryVersionString(): string {
     return `v${major(version)}.${minor(version)}`;
   },
@@ -169,7 +160,7 @@ export default {
     return arch;
   },
 
-  getMakerReleaseInfo(): object {
+  getMakerReleaseInfo(): any {
     const version = this.getBinaryVersionString();
     const platform = this.convertPlatform(process.platform);
     const arch = this.convertArch(process.arch);
@@ -182,32 +173,40 @@ export default {
     } 
   },
 
-  getMakerBinaryPath(releaseData: any) {
-    return path.join(__dirname, "../", ".next-cache", releaseData.version, releaseData.name);
+  getTempPath(maker: any) {
+    return path.join(__dirname, "../", ".next-cache", maker.version);
   },
 
-  checkMakerBinary(releaseData: any) {
-    const temp = this.getMakerBinaryPath(releaseData);
-    // check if the downloaded data is valid? 
-    // checksum?
-    return fs.existsSync(temp);
+  async createTempFile(file: string, data: object) {
+    await fs.writeJSON(file, data);
   },
 
-  async downloadMakerBinary(releaseData: any): Promise<string> {
-    console.log(`Downloading ${releaseData.name} from: ${releaseData.url}`);
-    // create temp dir for the binary, cleanup before + cleanup in case of failure
-    const dest = this.getMakerBinaryPath(releaseData);
+  checkMakerBinary(maker: any) {
+    const temp = this.getTempPath(maker);
+    // todo! check if the downloaded data is valid? checksum?
+    return fs.existsSync(path.join(temp, maker.name));
+  },
 
+  async downloadMakerBinary(maker: any): Promise<string> {
+    console.log(`Downloading ${maker.name} from: ${maker.url}`);
+
+    // prepare temp and dest paths
+    const temp = this.getTempPath(maker);
+    const dest = path.join(temp, maker.name);
+    
+    // create temp dir for the binary
     try {
-      await fs.ensureDir(path.dirname(dest));
+      await fs.ensureDir(temp);
     } catch (error) {
-      throw new Error("Error while creating download directory: " + path.dirname(dest));
+      throw new Error("Error while creating download directory: " + temp);
     }
 
+    // create write stream for the destination
     const writer = createWriteStream(dest);
 
+    // download file
     return await axios({
-      url: releaseData.url,
+      url: maker.url,
       method: "GET",
       responseType: "stream",
     }).then((result) => {
@@ -227,7 +226,7 @@ export default {
         writer.on("error", (error: any) => {
           writer.close();
           // cleanup temp folder
-          fs.removeSync(path.dirname(dest));
+          fs.removeSync(temp);
           reject(error);
         });
 
@@ -237,5 +236,5 @@ export default {
         });
       });
     });
-  },
+  }
 };
