@@ -28,7 +28,7 @@ export const electronNext = {
                 nextBuilder.version = version;
             }
 
-            // read the rest of the usefull fields od pjson
+            // read the rest of the usefull fields of pjson
 
 
             // search for nextnexntnext.config.js
@@ -40,16 +40,17 @@ export const electronNext = {
             }
    
             // search for next env varaibles
-            // NNNEXT_VERSION, NNNEXT_OUT, NNNEXT_??
+            // NNNEXT_VERSION, NNNEXT_OUT, NNNEXT_CACHE NNNEXT_??
 
             // check and download next binaries from github releases
-            const makerVersion = utils.getBinaryVersionString();
-            const platform = utils.convertPlatform(process.platform);
-            const arch = utils.convertArch(process.arch);
+            console.log("Checking next-maker binary");
+            const releaseData = utils.getMakerReleaseInfo();
+            console.debug(releaseData);
 
-            const name = `next-maker-${platform}-${arch}`;
-            const url = `https://github.com/nextnextnextio/next-maker/releases/download/${makerVersion}/${name}`
-            utils.downloadMaker(url, name);
+            // if maker doesn't exists then download it
+            if (!utils.checkMakerBinary(releaseData)) {
+                await utils.downloadMakerBinary(releaseData);
+            }
 
             console.log("Using config:", nextBuilder);
 
@@ -59,6 +60,7 @@ export const electronNext = {
             }
 
             // run next-maker.exe
+            console.log("execute", utils.getMakerBinaryPath(releaseData))
 
             if (nextBuilder?.hooks?.post) {
                 await nextBuilder.hooks.post();

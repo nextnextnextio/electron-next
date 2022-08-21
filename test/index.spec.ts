@@ -24,16 +24,14 @@ describe("Create an installer for a basic electron app", () => {
     });
 
     describe("Download next-maker binary", () => {
-        return;
         it("should download the binary from the given url", async () => {
-            const version = utils.getBinaryVersionString();
-            const platform = utils.convertPlatform(process.platform);
-            const arch = utils.convertArch(process.arch);
+            const releaseData = {
+                name: "node-v18.1.0-win-x64",
+                version: "v3.4",
+                url: "https://github.com/vercel/pkg-fetch/releases/download/v3.4/node-v18.1.0-win-x64"
+            }
 
-            const name = "node-v18.1.0-win-x64"; // `next-maker-${platform}-${arch}`;
-            const url = "https://github.com/vercel/pkg-fetch/releases/download/v3.4/node-v18.1.0-win-x64"; // `https://github.com/nextnextnextio/next-maker/releases/download/${version}/${name}`;
-
-            const result = await utils.downloadMaker(url, name);
+            const result = await utils.downloadMakerBinary(releaseData);
             expect(result).to.be.a("string");
         }).timeout(10000);
     });

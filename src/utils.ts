@@ -1,5 +1,4 @@
-import os from "os";
-import path, { resolve } from "path";
+import path from "path";
 import fs, { createWriteStream } from "fs-extra";
 import yargs from "yargs";
 import axios from "axios";
@@ -49,12 +48,15 @@ export default {
     throw new Error("Could not find package.json!");
   },
 
-  async readNextConfig(file: string) : Promise<any> {
+  async readNextConfig(file: string): Promise<any> {
     const config = await import(file);
     return config.default;
   },
 
-  searchNextConfig(root: string |undefined, config: string | undefined) : string | undefined {
+  searchNextConfig(
+    root: string | undefined,
+    config: string | undefined,
+  ): string | undefined {
     const defaultDir = path.join(process.cwd(), "nextnextnext.config.js");
     if (fs.existsSync(path.join(process.cwd(), "nextnextnext.config.js"))) {
       console.debug("Found:", defaultDir);
@@ -70,15 +72,16 @@ export default {
     }
 
     if (config != undefined) {
-      const configDir = path.join(path.dirname(config), "nextnextnext.config.js");
+      const configDir = path.join(
+        path.dirname(config),
+        "nextnextnext.config.js",
+      );
       if (fs.existsSync(configDir)) {
         console.debug("Found:", configDir);
         return configDir;
       }
     }
   },
-
-
 
   extractPackageInfo(pjson: any, key: string) {
     if (Object.prototype.hasOwnProperty.call(pjson, key)) {
@@ -166,22 +169,45 @@ export default {
     return arch;
   },
 
-  async downloadMaker(url: string, name: string) : Promise<string> {
-    console.log("Downloading next-maker from:", url);
+  getMakerReleaseInfo(): object {
+    const version = this.getBinaryVersionString();
+    const platform = this.convertPlatform(process.platform);
+    const arch = this.convertArch(process.arch);
+
+    const name = `next-maker-${platform}-${arch}`;
+    return {
+      name: name,
+      version: version,
+      url: `https://github.com/nextnextnextio/next-maker/releases/download/${version}/${name}`
+    } 
+  },
+
+  getMakerBinaryPath(releaseData: any) {
+    return path.join(__dirname, "../", ".next-cache", releaseData.version, releaseData.name);
+  },
+
+  checkMakerBinary(releaseData: any) {
+    const temp = this.getMakerBinaryPath(releaseData);
+    // check if the downloaded data is valid? 
+    // checksum?
+    return fs.existsSync(temp);
+  },
+
+  async downloadMakerBinary(releaseData: any): Promise<string> {
+    console.log(`Downloading ${releaseData.name} from: ${releaseData.url}`);
     // create temp dir for the binary, cleanup before + cleanup in case of failure
-    const temp = path.join(__dirname, "../", ".next-cache");
-    const dest = path.join(temp, name);
+    const dest = this.getMakerBinaryPath(releaseData);
 
     try {
-      await fs.ensureDir(temp);
-    } catch(error) {
-      throw new Error("Error while creating download directory: " + temp);
+      await fs.ensureDir(path.dirname(dest));
+    } catch (error) {
+      throw new Error("Error while creating download directory: " + path.dirname(dest));
     }
 
     const writer = createWriteStream(dest);
 
     return await axios({
-      url: url,
+      url: releaseData.url,
       method: "GET",
       responseType: "stream",
     }).then((result) => {
@@ -201,7 +227,7 @@ export default {
         writer.on("error", (error: any) => {
           writer.close();
           // cleanup temp folder
-          fs.removeSync(temp);
+          fs.removeSync(path.dirname(dest));
           reject(error);
         });
 
